@@ -6,6 +6,7 @@ vid.set(3, 960)
 mphands = mp.solutions.hands
 Hands = mphands.Hands(max_num_hands= 1, min_detection_confidence= 0.7, min_tracking_confidence= 0.6)
 
+
 def openedOrNot(positions, handedness):
     fourFingersClosed = (positions[8][1] > positions[6][1]) and (positions[12][1] > positions[10][1]) and (positions[16][1] > positions[14][1]) and (positions[20][1] > positions[18][1])
     fourFingersOpened = (positions[8][1] < positions[6][1]) and (positions[12][1] < positions[10][1]) and (positions[16][1] < positions[14][1]) and (positions[20][1] < positions[18][1])
@@ -13,31 +14,18 @@ def openedOrNot(positions, handedness):
 
     if (handedness=="Right"):
         if fourFingersOpened:
-            if positions[4][0] < positions[6][0]:
-                return "FULLY OPENED"
-            else:
-                return "THUMB NOT OUT"
+            return "FULLY OPENED" if positions[4][0] < positions[6][0] else "THUMB IN"
         elif fourFingersClosed:
-            if positions[4][0] > positions[6][0]:
-                return "FULLY CLOSED"
-            else:
-                return "THUMB OUT"
+            return "FULLY CLOSED" if positions[4][0] > positions[6][0] else "THUMB OUT"
         else:
             return "NOT OPENED/CLOSED"
     else:
         if fourFingersOpened:
-            if positions[4][0] > positions[6][0]:
-                return "FULLY OPENED"
-            else:
-                return "THUMB NOT OUT"
+            return "FULLY OPENED" if positions[4][0] > positions[6][0] else "THUMB IN"
         elif fourFingersClosed:
-            if positions[4][0] < positions[6][0]:
-                return "FULLY CLOSED"
-            else:
-                return "THUMB OUT"
+            return "FULLY CLOSED" if positions[4][0] < positions[6][0] else "THUMB OUT"
         else:
             return "NOT OPENED/CLOSED"
-
 while vid.isOpened():
     success, frame = vid.read()
     if not success:
