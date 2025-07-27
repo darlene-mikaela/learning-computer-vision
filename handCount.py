@@ -6,98 +6,52 @@ vid.set(3, 960)
 mphands = mp.solutions.hands
 Hands = mphands.Hands(max_num_hands= 1, min_detection_confidence= 0.7, min_tracking_confidence= 0.6)
 
-def handOpenStatus(positions, handedness):
-    fourFingersClosed = (positions[8][1] > positions[6][1]) and (positions[12][1] > positions[10][1]) and (positions[16][1] > positions[14][1]) and (positions[20][1] > positions[18][1])
-    fourFingersOpened = (positions[8][1] < positions[6][1]) and (positions[12][1] < positions[10][1]) and (positions[16][1] < positions[14][1]) and (positions[20][1] < positions[18][1])
-
+def thumbIn(positions, handedness):
     if (handedness=="Right"):
-        if fourFingersOpened:
-            return "FULLY OPENED" if positions[4][0] < positions[6][0] else "THUMB IN"
-        elif fourFingersClosed:
-            return "FULLY CLOSED" if positions[4][0] > positions[6][0] else "THUMB OUT"
-        else:
-            return "NOT OPENED/CLOSED"
+        return True if positions[4][0] > positions[6][0] else False
     else:
-        if fourFingersOpened:
-            return "FULLY OPENED" if positions[4][0] > positions[6][0] else "THUMB IN"
-        elif fourFingersClosed:
-            return "FULLY CLOSED" if positions[4][0] < positions[6][0] else "THUMB OUT"
-        else:
-            return "NOT OPENED/CLOSED"
+        return True if positions[4][0] < positions[6][0] else False
+
+def fourFingers(positions):
+    if ((positions[8][1] > positions[6][1]) 
+        and (positions[12][1] > positions[10][1]) 
+        and (positions[16][1] > positions[14][1]) 
+        and (positions[20][1] > positions[18][1])):
+        return 0
+    elif ((positions[8][1] < positions[6][1]) 
+        and (positions[12][1] > positions[10][1]) 
+        and (positions[16][1] > positions[14][1]) 
+        and (positions[20][1] > positions[18][1])):
+        return 1
+    elif ((positions[8][1] < positions[6][1]) 
+        and (positions[12][1] < positions[10][1]) 
+        and (positions[16][1] > positions[14][1]) 
+        and (positions[20][1] > positions[18][1])):
+        return 2
+    elif ((positions[8][1] < positions[6][1]) 
+        and (positions[12][1] < positions[10][1]) 
+        and (positions[16][1] < positions[14][1]) 
+        and (positions[20][1] > positions[18][1])):
+        return 3
+    elif ((positions[8][1] < positions[6][1]) 
+        and (positions[12][1] < positions[10][1]) 
+        and (positions[16][1] < positions[14][1]) 
+        and (positions[20][1] < positions[18][1])):
+        return 4
+    else:
+        return None
 
 def handCountLeft(positions):
-    if (positions[8][1] > positions[6][1]
-        and positions[12][1] > positions[10][1]
-        and positions[16][1] > positions[14][1]
-        and positions[20][1] > positions[18][1]
-        and positions[4][0] < positions[6][0]):
-        return "0"
-    elif (positions[8][1] < positions[6][1]
-        and positions[12][1] > positions[11][1]
-        and positions[16][1] > positions[14][1]
-        and positions[20][1] > positions[18][1]
-        and positions[4][0] < positions[6][0]):
-        return "1"
-    elif (positions[8][1] < positions[6][1]
-        and positions[12][1] < positions[11][1]
-        and positions[16][1] > positions[14][1]
-        and positions[20][1] > positions[18][1]
-        and positions[4][0] < positions[6][0]):
-        return "2"
-    elif (positions[8][1] < positions[6][1]
-        and positions[12][1] < positions[11][1]
-        and positions[16][1] < positions[14][1]
-        and positions[20][1] > positions[18][1]
-        and positions[4][0] < positions[6][0]):
-        return "3"
-    elif (positions[8][1] < positions[6][1]
-        and positions[12][1] < positions[11][1]
-        and positions[16][1] < positions[14][1]
-        and positions[20][1] < positions[18][1]
-        and positions[4][0] < positions[6][0]):
-        return "4"
-    # need todo 
-    elif (positions[8][1] < positions[6][1]
-        and positions[12][1] > positions[11][1]
-        and positions[16][1] > positions[14][1]
-        and positions[20][1] > positions[18][1]
-        and positions[4][0] > positions[6][0]):
-        return "5"
-    elif ((positions[8][1] > positions[6][1]
-        and positions[12][1] > positions[11][1]
-        and positions[16][1] > positions[14][1]
-        and positions[20][1] > positions[18][1]
-        and positions[4][0] > positions[6][0]) or
-        (positions[8][0] < positions[6][0]
-        and positions[12][0] < positions[11][0]
-        and positions[16][0] < positions[14][0]
-        and positions[20][0] < positions[18][0]
-        and positions[4][1] > positions[6][1])):
-        return "6"
-    elif (positions[8][1] < positions[6][1]
-        and positions[12][1] > positions[11][1]
-        and positions[16][1] > positions[14][1]
-        and positions[20][1] > positions[18][1]
-        and positions[4][0] > positions[6][0]):
-        return "7"
+    if thumbIn(positions, "Left"):
+        return fourFingers(positions)
     else:
-        return "???"
+        return 5 if fourFingers(positions)==4 else fourFingers(positions)+6
 
 def handCountRight(positions):
-    if (positions[8][1] > positions[6][1]
-        and positions[12][1] > positions[10][1]
-        and positions[16][1] > positions[14][1]
-        and positions[20][1] > positions[18][1]
-        and positions[4][0] > positions[6][0]):
-        return "0"
-    elif (positions[8][1] < positions[6][1]
-        and positions[12][1] > positions[11][1]
-        and positions[16][1] > positions[14][1]
-        and positions[20][1] > positions[18][1]
-        and positions[4][0] > positions[6][0]):
-        return "1"
+    if thumbIn(positions, "Right"):
+        return fourFingers(positions)
     else:
-        return "???"
+        return 5 if fourFingers(positions)==4 else fourFingers(positions)+6
 
 
 while vid.isOpened():
@@ -136,7 +90,7 @@ while vid.isOpened():
                 mpdraw.draw_landmarks(frame, handLm, mphands.HAND_CONNECTIONS)
 
             handCountResult = handCountLeft(points) if handedness=="Left" else handCountRight(points)
-            cv2.putText(frame, handCountResult, (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_4)
+            cv2.putText(frame, str(handCountResult), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_4)
     
     cv2.imshow("video", frame)
     cv2.waitKey(1)
