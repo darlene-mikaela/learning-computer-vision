@@ -41,18 +41,20 @@ def fourFingers(positions):
     else:
         return None
 
-def handCountLeft(positions):
-    if thumbIn(positions, "Left"):
-        return fourFingers(positions)
-    else:
-        return 5 if fourFingers(positions)==4 else fourFingers(positions)+6
+def handCounting(positions, handedness):
+    if fourFingers(positions)==None:
+        return "None"
 
-def handCountRight(positions):
-    if thumbIn(positions, "Right"):
-        return fourFingers(positions)
-    else:
-        return 5 if fourFingers(positions)==4 else fourFingers(positions)+6
-
+    if handedness=="Right":
+        if thumbIn(positions, handedness):
+            return fourFingers(positions)
+        else:
+            return 5 if fourFingers(positions)==4 else fourFingers(positions)+6
+    if handedness=="Left":
+        if thumbIn(positions, handedness):
+            return fourFingers(positions)
+        else:
+            return 5 if fourFingers(positions)==4 else fourFingers(positions)+6
 
 while vid.isOpened():
     success, frame = vid.read()
@@ -89,8 +91,7 @@ while vid.isOpened():
                 points[id] = (cx, cy) #create a list of (x,y) coordinates for each point
                 mpdraw.draw_landmarks(frame, handLm, mphands.HAND_CONNECTIONS)
 
-            handCountResult = handCountLeft(points) if handedness=="Left" else handCountRight(points)
-            cv2.putText(frame, str(handCountResult), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_4)
+            cv2.putText(frame, str(handCounting(points, handedness)), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_4)
     
     cv2.imshow("video", frame)
     cv2.waitKey(1)
